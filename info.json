@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "44443fa07cfc4b27944cdf62f7df08beeac5a3e1",
+    "author": "Joel Nitta <joelnitta@gmail.com>",
+    "time": "2023-05-30 11:28:45",
+    "files": 4,
+    "merge": false,
+    "message": "Bump ver (dev)\n"
+  },
+  "repo": "https://github.com/ropensci/dwctaxon",
+  "pkg": "dwctaxon"
+}
