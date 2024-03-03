@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "7058426261543190f2366b4a85fe693552548f0f",
+    "author": "joelnitta <joelnitta@gmail.com>",
+    "time": "2024-02-02 11:39:20",
+    "files": 1,
+    "merge": false,
+    "message": "Change method to source file with vascan url\n"
+  },
+  "repo": "https://github.com/ropensci/dwctaxon",
+  "pkg": "dwctaxon"
+}
