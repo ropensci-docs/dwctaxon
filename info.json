@@ -1,0 +1,13 @@
+{
+  "commit": {
+    "commit": "dbd42450af0ddc868f364909ee8e97fdf877dacc",
+    "author": "joelnitta <joelnitta@gmail.com>",
+    "time": "2025-12-15T02:06:47Z",
+    "files": 3,
+    "merge": false,
+    "message": "Update cran-comments and bump ver\n"
+  },
+  "repo": "https://github.com/ropensci/dwctaxon",
+  "pkg": "dwctaxon",
+  "time": "2026-08-30T07:23:55Z"
+}

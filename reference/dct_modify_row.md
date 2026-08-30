@@ -1,0 +1,279 @@
+# Modify row(s) of a taxonomic database
+
+Modify one or more rows in a taxonomic database in Darwin Core (DwC)
+format.
+
+## Usage
+
+``` r
+dct_modify_row(
+  tax_dat,
+  taxonID = NULL,
+  scientificName = NULL,
+  taxonomicStatus = NULL,
+  acceptedNameUsageID = NULL,
+  acceptedNameUsage = NULL,
+  clear_usage_id = dct_options()$clear_usage_id,
+  clear_usage_name = dct_options()$clear_usage_name,
+  fill_usage_name = dct_options()$fill_usage_name,
+  remap_names = dct_options()$remap_names,
+  remap_parent = dct_options()$remap_parent,
+  remap_variant = dct_options()$remap_variant,
+  stamp_modified = dct_options()$stamp_modified,
+  stamp_modified_by_id = dct_options()$stamp_modified_by_id,
+  stamp_modified_by = dct_options()$stamp_modified_by,
+  strict = dct_options()$strict,
+  quiet = dct_options()$quiet,
+  args_tbl = NULL,
+  ...
+)
+```
+
+## Arguments
+
+- tax_dat:
+
+  Dataframe; taxonomic database in DwC format.
+
+- taxonID:
+
+  Character or numeric vector of length 1; taxonID of the row to be
+  modified (the selected row).
+
+- scientificName:
+
+  Character vector of length 1; scientificName of the row to be modified
+  if `taxonID` is `NULL`, OR the scientificName to assign to the
+  selected row if `taxonID` is provided (see Details).
+
+- taxonomicStatus:
+
+  Character vector of length 1; taxonomicStatus to assign to the
+  selected row.
+
+- acceptedNameUsageID:
+
+  Character or numeric vector of length 1; acceptedNameUsageID to assign
+  to the selected row.
+
+- acceptedNameUsage:
+
+  Character vector of length 1; acceptedNameUsage to assign to the
+  selected row.
+
+- clear_usage_id:
+
+  Logical vector of length 1; should acceptedNameUsageID of the selected
+  row be set to `NA` if the word "accepted" is detected in tax_status
+  (not case-sensitive)? Default `TRUE`.
+
+- clear_usage_name:
+
+  Logical vector of length 1; should acceptedNameUsageID of the selected
+  row be set to `NA` if the word "accepted" is detected in tax_status
+  (not case-sensitive)? Default `TRUE`.
+
+- fill_usage_name:
+
+  Logical vector of length 1; should the acceptedNameUsage of the
+  selected row be set to the scientificName corresponding to its
+  acceptedNameUsageID? Default `TRUE`.
+
+- remap_names:
+
+  Logical vector of length 1; should the acceptedNameUsageID be updated
+  (remapped) for rows with the same acceptedNameUsageID as the taxonID
+  of the row to be modified? Default `TRUE`.
+
+- remap_parent:
+
+  Logical vector of length 1; should the parentNameUsageID be updated
+  (remapped) to that of its accepted name if it is a synonym? Will also
+  apply to any other rows with the same parentNameUsageID as the taxonID
+  of the row to be modified. Default `TRUE`.
+
+- remap_variant:
+
+  Same as `remap_names`, but applies specifically to rows with
+  taxonomicStatus of "variant". Default `FALSE`.
+
+- stamp_modified:
+
+  Logical vector of length 1; should the `modified` column of any newly
+  created or modified row include a timestamp with the date and time of
+  its creation/modification? If the `modified` column does not yet exist
+  it will be created. Default `TRUE`.
+
+- stamp_modified_by_id:
+
+  Logical vector of length 1; should the `modifiedByID` column of any
+  newly created or modified row include the ID of the current user? If
+  the `modifiedByID` column does not yet exist it will be created; note
+  that this is a non-DWC standard column, so `"modifiedByID"` is
+  required in `extra_cols`. The current user ID can be specified with
+  the `user_id` option. Default `FALSE`.
+
+- stamp_modified_by:
+
+  Logical vector of length 1; should the `modifiedBy` column of any
+  newly created or modified row include the name of the current user? If
+  the `modifiedBy` column does not yet exist it will be created; note
+  that this is a non-DWC standard column, so `"modifiedBy"` is required
+  in `extra_cols`. The current user can be specified with the
+  `user_name` option. Default `FALSE`.
+
+- strict:
+
+  Logical vector of length 1; should taxonomic checks be run on the
+  updated taxonomic database? Default `FALSE`..
+
+- quiet:
+
+  Logical vector of length 1; should warnings be silenced? Default
+  `FALSE`..
+
+- args_tbl:
+
+  A dataframe including columns corresponding to one or more of the
+  above arguments, except for `tax_dat`. In this case, the input
+  taxonomic database will be modified sequentially over each row of
+  input in `args_tbl`. Other DwC terms can also be included as
+  additional columns, similar to using `...` to modify a single row.
+
+- ...:
+
+  other DwC terms to modify, specified as sets of named values. Each
+  element of the vector must have a name corresponding to a valid DwC
+  term; see
+  [dct_terms](https://docs.ropensci.org/dwctaxon/reference/dct_terms.md).
+
+## Value
+
+Dataframe; taxonomic database in DwC format
+
+## Details
+
+`taxonID` is only used to identify the row(s) to modify and is not
+itself modified. `scientificName` can be used in the same way if
+`taxonID` is not provided (as long as `scientificName` matches a single
+row). If both `taxonID` and `scientificName` are provided,
+`scientificName` will be assigned to the scientificName of the row
+identified by `taxonID`, replacing any value that already exists.
+
+`acceptedNameUsageID` and `acceptedNameUsage` must match existing values
+of acceptedNameUsageID and acceptedNameUsage in the input data
+(`tax_dat`). On default settings, either can be used and the other will
+be filled in automatically (`fill_usage_id` and `fill_usage_name` are
+both `TRUE`).
+
+Any other arguments provided that are DwC terms will be assigned to the
+selected row (i.e., they will modify the row).
+
+If `remap_names` is `TRUE` (default) and `acceptedNameUsageID` is
+provided, any names that have an acceptedNameUsageID matching the
+taxonID of the selected row (i.e., synonyms of that row) will also have
+their acceptedNameUsageID replaced with the new acceptedNameUsageID.
+This applies to `acceptedNameUsage` as well. This behavior is not
+applied to names with taxonomicStatus of "variant" by default, but can
+be turned on for such names with `remap_variant`.
+
+If `remap_parent` is `TRUE` (default) and the `parentNameUsageID` of the
+selected row is a synonym, the `parentNameUsageID` will be changed to
+that of the accepted name (of the parent taxon). This will also apply to
+any other row with the same `parentNameUsageID` as the selected row.
+This applies to `parentNameUsage` as well.
+
+If `clear_usage_id` or `clear_usage_name` is `TRUE` and
+`taxonomicStatus` includes the word "accepted", acceptedNameUsageID or
+acceptedNameUsage will be set to NA respectively, regardless of the
+values of `acceptedNameUsageID`, `acceptedNameUsage`, or
+`fill_usage_name`.
+
+Can either modify a single row in the input taxonomic database if each
+argument is supplied as a vector of length 1, or can apply a set of
+changes to the taxonomic database if the input is supplied as a
+dataframe via `args_tbl`.
+
+## Examples
+
+``` r
+# Swap the accepted / synonym status of
+# Cephalomanes crassum (Copel.) M. G. Price
+# and Trichomanes crassum Copel.
+dct_filmies |>
+  dct_modify_row(
+    scientificName = "Cephalomanes crassum (Copel.) M. G. Price",
+    taxonomicStatus = "synonym",
+    acceptedNameUsage = "Trichomanes crassum Copel."
+  ) |>
+  dct_modify_row(
+    scientificName = "Trichomanes crassum Copel.",
+    taxonomicStatus = "accepted"
+  ) |>
+  dct_validate(
+    check_tax_status = FALSE,
+    check_mapping_accepted_status = FALSE,
+    check_sci_name = FALSE
+  )
+#> # A tibble: 2,451 × 6
+#>    taxonID acceptedNameUsageID taxonomicStatus taxonRank scientificName modified
+#>    <chr>   <chr>               <chr>           <chr>     <chr>          <chr>   
+#>  1 541150… NA                  accepted        species   Cephalomanes … NA      
+#>  2 541337… NA                  accepted        species   Trichomanes c… 2026-08…
+#>  3 541150… 54133783            synonym         species   Cephalomanes … 2026-08…
+#>  4 541337… 54115098            synonym         species   Trichomanes d… NA      
+#>  5 541150… NA                  accepted        species   Cephalomanes … NA      
+#>  6 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  7 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  8 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  9 541337… 54115100            synonym         species   Cephalomanes … NA      
+#> 10 541337… 54115100            synonym         species   Lacostea java… NA      
+#> # ℹ 2,441 more rows
+# Sometimes changing one name will affect others, if they map
+# to the new synonym
+dct_modify_row(
+  tax_dat = dct_filmies |> head(),
+  scientificName = "Cephalomanes crassum (Copel.) M. G. Price",
+  taxonomicStatus = "synonym",
+  acceptedNameUsage = "Cephalomanes densinervium (Copel.) Copel."
+)
+#> # A tibble: 6 × 6
+#>   taxonID  acceptedNameUsageID taxonomicStatus taxonRank scientificName modified
+#>   <chr>    <chr>               <chr>           <chr>     <chr>          <chr>   
+#> 1 54115096 NA                  accepted        species   Cephalomanes … NA      
+#> 2 54133783 54115098            synonym         species   Trichomanes c… 2026-08…
+#> 3 54115097 54115098            synonym         species   Cephalomanes … 2026-08…
+#> 4 54133784 54115098            synonym         species   Trichomanes d… NA      
+#> 5 54115098 NA                  accepted        species   Cephalomanes … NA      
+#> 6 54133786 54115100            synonym         species   Cephalomanes … NA      
+# Apply a set of changes
+library(tibble)
+updates <- tibble(
+  scientificName = c(
+    "Cephalomanes atrovirens Presl",
+    "Cephalomanes crassum (Copel.) M. G. Price"
+  ),
+  taxonomicStatus = "synonym",
+  acceptedNameUsage = "Trichomanes crassum Copel."
+)
+dct_filmies |>
+  dct_modify_row(args_tbl = updates) |>
+  dct_modify_row(
+    scientificName = "Trichomanes crassum Copel.",
+    taxonomicStatus = "accepted"
+  )
+#> # A tibble: 2,451 × 6
+#>    taxonID acceptedNameUsageID taxonomicStatus taxonRank scientificName modified
+#>    <chr>   <chr>               <chr>           <chr>     <chr>          <chr>   
+#>  1 541150… 54133783            synonym         species   Cephalomanes … NA      
+#>  2 541337… NA                  accepted        species   Trichomanes c… 2026-08…
+#>  3 541150… 54133783            synonym         species   Cephalomanes … NA      
+#>  4 541337… 54115098            synonym         species   Trichomanes d… NA      
+#>  5 541150… NA                  accepted        species   Cephalomanes … NA      
+#>  6 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  7 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  8 541337… 54115100            synonym         species   Cephalomanes … NA      
+#>  9 541337… 54115100            synonym         species   Cephalomanes … NA      
+#> 10 541337… 54115100            synonym         species   Lacostea java… NA      
+#> # ℹ 2,441 more rows
+```
